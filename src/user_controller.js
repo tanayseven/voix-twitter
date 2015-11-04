@@ -51,7 +51,7 @@ UserHandler.prototype.loginUser = function(obj,callback) {
     if (!doc) {
       callback({success:false});
     } else {
-      callback({success:true});
+      callback({success:true,username:obj.username});
     }
   });
 };

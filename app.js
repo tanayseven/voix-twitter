@@ -47,7 +47,11 @@ app.get('/', function (req, res) {
 app.post('/login', function (req, res) {
   user.loginUser(req.body,function (ret){
     console.log(JSON.stringify(ret));
-    res.render('index.jade',{login:ret});
+    if (ret.success) {
+      res.render('logged_in.jade',{login:ret});
+    } else {
+      res.render('index.jade',{login:ret});
+    }
   });
 });
 
@@ -58,7 +62,7 @@ app.get('/signup', function (req, res) {
 app.post('/submit_new_acc', function (req, res) {
   user.registerUser(req.body,function (ret) {
     console.log(JSON.stringify(ret));
-    res.render('index.jade',{registerd:ret});
+    res.render('index.jade',{registered:ret});
   });
 });
 
