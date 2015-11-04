@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-var connString = 'mongodb://127.0.0.1:27017/voix-twitter';
+var connString = process.env.DB_CONN_STRING || 'mongodb://127.0.0.1:27017/voix-twitter';
 var mongo = require('mongodb');
 var twitter_handler = require('./twitter_controller');
 var db = require('monk')(connString);
