@@ -30,10 +30,10 @@ var env = (function(){
 
 function TwitterController () {
   this.api = new Twit({
-    consumer_key:         env.get('CONSUMER_KEY'),
-    consumer_secret:      env.get('CONSUMER_SECRET'),
-    access_token:         env.get('ACCESS_TOKEN'),
-    access_token_secret:  env.get('ACCESS_TOKEN_SECRET')
+    consumer_key:        process.env.TWIT_CONSUMER_KEY        || env.get('CONSUMER_KEY'),
+    consumer_secret:     process.env.TWIT_CONSUMER_SECRET     || env.get('CONSUMER_SECRET'),
+    access_token:        process.env.TWIT_ACCESS_TOKEN        || env.get('ACCESS_TOKEN'),
+    access_token_secret: process.env.TWIT_ACCESS_TOKEN_SECRET || env.get('ACCESS_TOKEN_SECRET')
   });
   this.api.get('search/tweets', { q: 'banana since:2011-11-11', count: 100000 }, function(err, data, response) {
     console.log(data);
