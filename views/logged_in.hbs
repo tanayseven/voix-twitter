@@ -1,0 +1,15 @@
+<doctype html>
+<html>
+  <head>
+    title="Voix - Twitter poll client"
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  </head>
+  <body>
+    <h1> Voix </h1>
+    {{#if login}}
+      {{#if login.success}}
+        <p> Logged in as: {{login.username}} </p>
+      {{/if}}
+    {{/if}}
+  </body>
+</html>

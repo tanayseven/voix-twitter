@@ -23,46 +23,54 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var querystring = require('querystring');
+var handlebars = require('handlebars');
+var cons = require('consolidate');
 
 var UserHandler = new require('./src/user_controller');
 var user = new UserHandler();
 
 var app = express();
+app.set('views',__dirname+'/views/');
 
 var port = Number(process.env.PORT || 5000);
-
-app.set('views',__dirname+'/views/');
-app.set('view engine','jade');
-app.engine('jade', require('jade').__express);
 
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
 app.use(bodyParser.json());
 
+function compileAndRenderPage(file_name,res,args) {
+	if (typeof(args) === 'undefined'){
+		args = {};
+	}
+	cons.handlebars('views/' + file_name, args, function(err, html){
+	  if (err) throw err;
+		res.send(html);
+	});
+}
+
 app.get('/', function (req, res) {
-  res.render('index.jade');
+	compileAndRenderPage('index.hbs',res);
 });
 
 app.post('/login', function (req, res) {
   user.loginUser(req.body,function (ret){
     console.log(JSON.stringify(ret));
     if (ret.success) {
-      res.render('logged_in.jade',{login:ret});
+      compileAndRenderPage('logged_in.hbs',res,{login:ret});
     } else {
-      res.render('index.jade',{login:ret});
+      compileAndRenderPage('index.hbs',res,{login:ret});
     }
   });
 });
 
 app.get('/signup', function (req, res) {
-  res.render('register.jade');
+  compileAndRenderPage('register.hbs',res);
 });
 
 app.post('/submit_new_acc', function (req, res) {
   user.registerUser(req.body,function (ret) {
-    console.log(JSON.stringify(ret));
-    res.render('index.jade',{registered:ret});
+    compileAndRenderPage('index.hbs',res,{registered:ret});
   });
 });
 
