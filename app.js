@@ -32,6 +32,8 @@ var user = new UserHandler();
 var app = express();
 app.set('views',__dirname+'/views/');
 
+app.use(express.static('public'));
+
 var port = Number(process.env.PORT || 5000);
 
 app.use(bodyParser.urlencoded({

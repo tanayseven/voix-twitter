@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>VOIX Home Page</title>
+
+    <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/freelancer.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" class="index">
+    <div class="container=fluid">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container" >
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#page-top">VOIX<span style="font-size:40%"> A community poll</span></a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#portfolio">Trending Polls</a>
+                    </li>
+                    <li class="page-scroll">
+                       <a href="#" role="button" data-toggle="modal" data-target="#login-modal">Login</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#" role="button" data-toggle="modal" data-target="#sign-modal">Sign Up!</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+<!-- BEGIN # MODAL LOGIN -->
+<div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" align="center">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </button>
+                </div>
+                
+                <!-- Begin # DIV Form -->
+                <div id="div-forms">
+                
+                    <!-- Begin # Login Form -->
+                    <form id="login-form">
+                        <div class="modal-body">
+                            <h5>Enter the Details to login</h5>
+                            <!--
+                            <div id="div-login-msg">
+                                <div id="icon-login-msg" class="glyphicon glyphicon-chevron-right"></div>
+                                <span id="text-login-msg">Type your username and password.</span>
+                            </div>
+                            -->
+                            <div class="form-group">
+                             <label for="email">User name</label>
+                            <input id="login_username" class="form-control" type="text" placeholder="Username/Email" required>
+                            </div>
+                            <div class="form-group">
+                            <label for="password">Password</label>    
+                            <input id="login_password" class="form-control" type="password" placeholder="Password" required>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox"> Remember me
+                                </label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                            </div>
+                            <div>
+                                <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
+                                <!--    
+                                <button id="login_register_btn" type="button" class="btn btn-link" data-target="#register-form">Register</button>
+                                -->
+                            </div>
+                        </div>
+                    </form>
+                    <!-- End # Login Form -->
+
+                    <!-- 
+                    <!-- Begin | Register Form --
+                    <form id="register-form" style="display:none;">
+                        <div class="modal-body">
+                            <div id="div-register-msg">
+                                <div id="icon-register-msg" class="glyphicon glyphicon-chevron-right"></div>
+                                <span id="text-register-msg">Register an account.</span>
+                            </div>
+                            <input id="register_username" class="form-control" type="text" placeholder="Username (type ERROR for error effect)" required>
+                            <input id="register_email" class="form-control" type="text" placeholder="E-Mail" required>
+                            <input id="register_password" class="form-control" type="password" placeholder="Password" required>
+                        </div>
+                        <div class="modal-footer">
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
+                            </div>
+                            <div>
+                                <button id="register_login_btn" type="button" class="btn btn-link">Log In</button>
+                                <button id="register_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- End | Register Form
+                    -->
+                    <!-- Begin | Lost Password Form -->
+                    <form id="lost-form" style="display:none;">
+                        <div class="modal-body">
+                            <h5>Enter the Registered Email Id to retrive password</h5>
+                            <div id="div-lost-msg">
+                                <div id="icon-lost-msg" class="glyphicon glyphicon-chevron-right"></div>
+                                <span id="text-lost-msg">Type your e-mail.</span>
+                            </div>
+                            <input id="lost_email" class="form-control" type="text" placeholder="E-Mail (type ERROR for error effect)" required>
+                        </div>
+                        <div class="modal-footer">
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-lg btn-block">Send</button>
+                            </div>
+                            <div>
+                                <button id="lost_login_btn" type="button" class="btn btn-link">Log In</button>
+                                <!--
+                                <button id="lost_register_btn" type="button" data-toggle="modal" class="btn btn-link">Register</button>
+                                -->
+                            </div>
+                        </div>
+                    </form>
+                    <!-- End | Lost Password Form -->
+             
+
+                </div>
+                <!-- End # DIV Form -->
+                
+            </div>
+        </div>
+    </div>
+    <!-- END # MODAL LOGIN --> 
+
+    <!-- Header -->
+    <header style="background-color: white;color: black;">
+        <div class="container" style="margin-top:0%;margin-left:1%;margin-right: 2%;">
+            <div class="row" style="margin-top:-5%;;margin-left:0%;backgroud:white">
+                <div class="col-lg-8">
+                        <h1 class="text-left text-upper">About<h1>
+                            <p class="text-left" style="font-size: small;color;color: grey;">Polls give your web audiences a quick and easy way to voice their opinion on concise topics and then immediately see feedback from their vote, automatically.The Adxstudio Portals Polls provide single question or multiple choice response polls on simple topics of interest. Either way, responses are instantly stored and associated with the applicable CRM Contact record for immediate review or aggregate reporting. You can use them as simple market research tools and, if you refresh or rotate the polls dynamically, you'll keep your website looking current and topical. 
+                            <br/>   
+                            Polls may placed on the portal via the PollPlacement control. This control works very similarily to the AdPlacement control.  If there are any polls associated with the Poll Placement entity that is being rendered by the PollPlacement control, then those polls will be rendered.  If there is more than one poll for a given placement, the placement will randomly present one of the specified polls.
+                            </p>
+                </div>
+                <div class="col-lg-4">
+                    <img class="img-responsive" src="img/index_logo.jpg" alt="">
+                </div>    
+            </div>
+        </div>
+    </header>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="footer-below" style="min-height:10%">
+                <div class="row">
+                    <div class="col-lg-12">
+                        Copyright &copy; mit_cse.com 2014
+                    </div>
+                </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/cbpAnimatedHeader.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="js/jqBootstrapValidation.js"></script>
+    <script src="js/contact_me.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/freelancer.js"></script>
+    <script src="js/loginpopup.js"></script>
+</div>
+
+</body>
+
+</html>
