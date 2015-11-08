@@ -35,9 +35,44 @@ function TwitterController () {
     access_token:        process.env.TWIT_ACCESS_TOKEN        || env.get('ACCESS_TOKEN'),
     access_token_secret: process.env.TWIT_ACCESS_TOKEN_SECRET || env.get('ACCESS_TOKEN_SECRET')
   });
-  this.api.get('search/tweets', { q: 'banana since:2011-11-11', count: 100000 }, function(err, data, response) {
-    console.log(data);
-  });
+  // this.api.get('search/tweets', { q: 'apple OR mango OR pineapple since:2011-11-11', count: 100000 }, function(err, data, response) {
+  //   console.log(data);
+  // });
 }
+
+function appendKeywords (arr,option) {
+  var str = arr[0];
+  if (typeof(option) == 'undefined') {
+    option = '';
+  }
+  for (var i = 1 ; i < arr.length ; ++i ) {
+    str += option + arr[i];
+  }
+  return str;
+}
+
+function getDateString(date) {
+  var str = '';
+  str += date.getFullYear().toString() + '-';
+  str += (date.getMonth()+1)<=9?'0'+(date.getMonth()+1).toString()+'-':(date.getMonth()+1).toString()+'-';
+  str += (date.getDate()<=9)?'0'+date.getDate().toString():date.getDate().toString();
+  return str;
+}
+
+TwitterController.prototype.getTweets = function (keywordsOptions,keywordsVotes,dateStart,dateUntil,callback) {
+  var strKey = appendKeywords(keywordsOptions,' ');
+  strKey += ' ' + appendKeywords(keywordsVotes,' OR ');
+  console.log(strKey);
+  var strDateSince = getDateString(dateStart);
+  var strDateUntil = getDateString(dateUntil);
+  // console.log('getting tweets');
+  console.log( ' ' + strKey + ' since:'+strDateSince+' until:'+strDateUntil);
+  // this.api.get('search/tweets', { q: strKey + ' ' + ' since:'+strDateSince+' until:'+strDateUntil}, function(err, data, response) {
+  this.api.get('search/tweets', { q: 'election+india+2014+congress+OR+bjp+OR+modi+OR+aap+OR+congress since:2014-02-01 until:2015-11-08'}, function(err, data, response) {
+    console.log('got tweets');
+    console.log(data);
+    callback(data);
+  });
+};
 
 module.exports = TwitterController;

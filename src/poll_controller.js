@@ -22,38 +22,50 @@
 
 var connString = process.env.DB_CONN_STRING || 'mongodb://127.0.0.1:27017/voix-twitter';
 var mongo = require('mongodb');
-// var twitter_handler = require('./twitter_controller');
+var TwitterController = require('./twitter_controller');
 var db = require('monk')(connString);
 
-function UserHandler(){
-  this.db = db.get('user');
+function PollController(){
+  this.db = db.get('poll');
+  this.voted_handles = {};
+  this.poll_id = null;
+  this.doc= null;
+  this.twitter = new TwitterController();
 }
 
-UserHandler.prototype.registerUser = function(obj,callback) {
+PollController.prototype.assignDummy = function () {
   var parent = this;
-  parent.db.findOne(obj,function(err,doc){
+  this.poll_id = '563f23812399ec75d216e9d2';
+}
+
+var unifyVoteKeywords = function (doc) {
+  var res = [];
+  for (var i = 0; i < doc.votes.length; i++) {
+    res.push(doc.votes[i]);
+    for (var j = 0; j < doc.vote_keywords[i.toString()].length; j++) {
+      res.push(doc.vote_keywords[i.toString()][j]);
+    }
+  }
+  return res;
+};
+
+PollController.prototype.fetchTweets = function(poll_id,callback) {
+  var parent = this;
+  console.log('called fetchign tweets');
+  // console.log(parent.poll_id);
+  parent.db.findById(parent.poll_id,function(err,doc) {
     if (err) throw err;
-    if (!doc) {
-      parent.db.insert(obj,function(err,doc){
-        if (err) throw err;
-        callback({success:true});
+    console.log('found poll, i guess :-|');
+    if (doc) {
+      var dateSince = doc.start_time;
+      parent.doc = doc;
+      // console.log(JSON.stringify(doc));
+      parent.twitter.getTweets(doc.poll_keywords, unifyVoteKeywords(doc), doc.start_time, doc.end_time, function (ret) {
+        console.log('getting tweets');
+        callback(ret);
       });
-    } else {
-      callback({success:false});
     }
   });
 };
 
-UserHandler.prototype.loginUser = function(obj,callback) {
-  var parent = this;
-  parent.db.findOne(obj,function(err,doc) {
-    if (err) throw err;
-    if (!doc) {
-      callback({success:false});
-    } else {
-      callback({success:true,username:obj.username});
-    }
-  });
-};
-
-module.exports = UserHandler;
+module.exports = PollController;
