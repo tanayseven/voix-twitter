@@ -29,6 +29,12 @@ var cons = require('consolidate');
 var UserHandler = new require('./src/user_controller');
 var user = new UserHandler();
 
+// var TwitterController = new require('./src/twitter_controller');
+// var twitter = new TwitterController();
+
+var PollController = new require('./src/poll_controller');
+var poll = new PollController();
+
 var app = express();
 app.set('views',__dirname+'/views/');
 
@@ -52,12 +58,18 @@ function compileAndRenderPage(file_name,res,args) {
 }
 
 app.get('/', function (req, res) {
+	console.log("called /");
+	poll.assignDummy();
+	poll.fetchTweets('afwdad',function(ret){
+		console.log("done fetching");
+		console.log(JSON.stringify(ret));
+	});
 	compileAndRenderPage('index.hbs',res);
 });
 
 app.post('/login', function (req, res) {
   user.loginUser(req.body,function (ret){
-    console.log(JSON.stringify(ret));
+    console.log(JSON.stringify('argwag',ret));
     if (ret.success) {
       compileAndRenderPage('logged_in.hbs',res,{login:ret});
     } else {
