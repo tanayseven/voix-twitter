@@ -62,7 +62,6 @@ app.get('/', function (req, res) {
 	poll.assignDummy();
 	poll.fetchTweets('afwdad',function(ret){
 		console.log("done fetching");
-		console.log(JSON.stringify(ret));
 	});
 	compileAndRenderPage('index.hbs',res);
 });

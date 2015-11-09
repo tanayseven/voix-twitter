@@ -68,7 +68,7 @@ TwitterController.prototype.getTweets = function (keywordsOptions,keywordsVotes,
   // console.log('getting tweets');
   console.log( ' ' + strKey + ' since:'+strDateSince+' until:'+strDateUntil);
   // this.api.get('search/tweets', { q: strKey + ' ' + ' since:'+strDateSince+' until:'+strDateUntil}, function(err, data, response) {
-  this.api.get('search/tweets', { q: 'election+india+2014+congress+OR+bjp+OR+modi+OR+aap+OR+congress since:2014-02-01 until:2015-11-08'}, function(err, data, response) {
+  this.api.get('search/tweets', { q: 'election+india+2014+congress+OR+bjp+OR+modi+OR+aap+OR+congress since:'+strDateSince+' until:'+strDateUntil}, function(err, data, response) {
     console.log('got tweets');
     console.log(data);
     callback(data);
