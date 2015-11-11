@@ -69,7 +69,7 @@ PollController.prototype.processTweet = function (tweet_id,tweet) {
           if ( tweet.indexOf(parent.votes[i].tags[j].toLowerCase()) > 0 ) {
             // parent.db.updateById(parent.poll_id,{$inc:{name.count}})
             console.log("Match found");
-            parent.db.update({_id:parent.poll_id,"votes.name":parent.votes[i].name,$nin:{tweets:tweet_id}},{$inc:{"votes.$.count":1},$push:{tweets:tweet_id}},function(err,doc) {
+            parent.db.update({_id:parent.poll_id,"votes.name":parent.votes[i].name,tweets:{$not:{$eq:tweet_id}}},{$inc:{"votes.$.count":1},$push:{tweets:tweet_id}}, function(err,doc) {
               if (err) throw err;
               if (doc) {
                 console.log("Updated/incremented");
