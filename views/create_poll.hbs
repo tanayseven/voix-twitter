@@ -29,31 +29,28 @@
   </head>
   <body>
     <h1> Voix </h1>
-    <form action="/login" method="POST">
-      <input name='username' type='text' placeholder='username' autofocus>
+    <form action="/submit_new_poll" method="POST">
+      <textarea name='question' autofocus> </textarea>
       <br>
-      <input name='password' type='password' placeholder='password' autofocus>
+      <input name='keys' type="text">
       <br>
-      <input type='submit' value='Sign in'>
+      <input name='option[]' type="text"><input name='ans_key[]' type="text">
       <br>
-      <a href="./signup"> Sign Up </a>
-      <a href="#"> Forgot Password </a>
+      <input name='option[]' type="text"><input name='ans_key[]' type="text">
+      <br>
+      <input name='option[]' type="text"><input name='ans_key[]' type="text">
+      <br>
+      <input name='option[]' type="text"><input name='ans_key[]' type="text">
+      <br>
+      <input name='start_time' type="date">
+      <br>
+      <input name='end_time' type="date">
+      <br>
+      <input type='submit' value='Create Poll'>
+      <br>
       <br>
       <p>
-        {{#if registered}}
-          {{#if registered.success}}
-            Registered successfully
-          {{else}}
-            Registration Failed
-          {{/if}}
-        {{/if}}
-        {{#if login}}
-          {{#if login.success}}
-            Logged in successfully
-          {{else}}
-            Login Failed
-          {{/if}}
-        {{/if}}
+
       </p>
     </form>
   </body>

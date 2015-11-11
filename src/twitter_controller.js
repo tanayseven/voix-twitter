@@ -20,7 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+var connString = process.env.DB_CONN_STRING || 'mongodb://127.0.0.1:27017/voix-twitter';
 var Twit = require('twit');
+var mongo = require('mongodb');
+var db = require('monk')(connString);
 
 var env = (function(){
   var Habitat = require("habitat");
@@ -29,6 +32,9 @@ var env = (function(){
 }());
 
 function TwitterController () {
+  this.db = db.get('twitter');
+  this.obj_insert = [];
+  if (db) {console.log("Connected successfully");}
   this.api = new Twit({
     consumer_key:        process.env.TWIT_CONSUMER_KEY        || env.get('CONSUMER_KEY'),
     consumer_secret:     process.env.TWIT_CONSUMER_SECRET     || env.get('CONSUMER_SECRET'),
@@ -60,6 +66,7 @@ function getDateString(date) {
 }
 
 TwitterController.prototype.getTweets = function (keywordsOptions,keywordsVotes,dateStart,dateUntil,callback) {
+  var parent = this;
   var strKey = appendKeywords(keywordsOptions,' ');
   strKey += ' ' + appendKeywords(keywordsVotes,' OR ');
   console.log(strKey);
@@ -68,11 +75,35 @@ TwitterController.prototype.getTweets = function (keywordsOptions,keywordsVotes,
   // console.log('getting tweets');
   console.log( ' ' + strKey + ' since:'+strDateSince+' until:'+strDateUntil);
   // this.api.get('search/tweets', { q: strKey + ' ' + ' since:'+strDateSince+' until:'+strDateUntil}, function(err, data, response) {
-  this.api.get('search/tweets', { q: 'election+india+2014+congress+OR+bjp+OR+modi+OR+aap+OR+congress since:'+strDateSince+' until:'+strDateUntil}, function(err, data, response) {
+  parent.api.get('search/tweets', {  q: strKey + ' ' + ' since:'+strDateSince+' until:'+strDateUntil}, function(err, data, response) {
     console.log('got tweets');
-    console.log(data);
+    // console.log(JSON.stringify(data.statuses[0]));
+    if (typeof(data) !== 'undefined'){
+      for (var i = 0 ; i < data.statuses.length ; ++i ){
+        var obj_tmp = {
+          username: data.statuses[i].user.screen_name,
+          txt:data.statuses[i].text,
+          id:data.statuses[i].id,
+          timestamp:data.statuses[i].created_at
+        };
+        console.log(JSON.stringify(obj_tmp));
+        parent.obj_insert.push(obj_tmp);
+      }
+    }
     callback(data);
   });
 };
+
+TwitterController.prototype.storeTweets = function(callback) {
+  var parent = this;
+  parent.db.insert(parent.obj_insert,function (err,doc) {
+    if (err) throw err;
+    if(doc){
+      console.log("Inserted into db");
+    }
+  });
+  parent.obj_insert = [];
+  callback();
+}
 
 module.exports = TwitterController;

@@ -27,7 +27,8 @@ var db = require('monk')(connString);
 
 function PollController(){
   this.db = db.get('poll');
-  this.voted_handles = {};
+  this.twitter_db = db.get('twitter');
+  this.votes = {};
   this.poll_id = null;
   this.doc= null;
   this.twitter = new TwitterController();
@@ -38,32 +39,75 @@ PollController.prototype.assignDummy = function () {
   this.poll_id = '563f23812399ec75d216e9d2';
 }
 
+PollController.prototype.createPoll = function (obj,callback) {
+  var parent = this;
+  // parent.db.insert(obj,)
+};
+
 var unifyVoteKeywords = function (doc) {
   var res = [];
   for (var i = 0; i < doc.votes.length; i++) {
-    res.push(doc.votes[i]);
-    for (var j = 0; j < doc.vote_keywords[i.toString()].length; j++) {
-      res.push(doc.vote_keywords[i.toString()][j]);
+    for (var j = 0; j < doc.votes[i].tags.length; j++) {
+      res.push(doc.votes[i].tags[j]);
     }
   }
+  console.log(JSON.stringify(res));
   return res;
+};
+
+PollController.prototype.processTweet = function (tweet_id,tweet) {
+  var parent = this;
+  tweet = tweet.toLowerCase();
+  console.log("Processing tweet");
+  parent.twitter_db.findById({id:tweet_id},function(err,doc) {
+    if (err) throw err;
+    console.log(JSON.stringify(doc))
+    if (!doc) {    // skip redundant tweets
+      // parent.votes = doc.votes;
+      for (var i = 0; i < parent.votes.length; i++) {
+        for (var j = 0; j < parent.votes[i].tags.length; j++) {
+          if ( tweet.indexOf(parent.votes[i].tags[j].toLowerCase()) > 0 ) {
+            // parent.db.updateById(parent.poll_id,{$inc:{name.count}})
+            console.log("Match found");
+            parent.db.update({_id:parent.poll_id,"votes.name":parent.votes[i].name,$nin:{tweets:tweet_id}},{$inc:{"votes.$.count":1},$push:{tweets:tweet_id}},function(err,doc) {
+              if (err) throw err;
+              if (doc) {
+                console.log("Updated/incremented");
+                return;
+              }
+            });
+          }
+        }
+      }
+    }
+  });
 };
 
 PollController.prototype.fetchTweets = function(poll_id,callback) {
   var parent = this;
   console.log('called fetchign tweets');
-  // console.log(parent.poll_id);
   parent.db.findById(parent.poll_id,function(err,doc) {
     if (err) throw err;
     console.log('found poll, i guess :-|');
-    if (doc) {
+    if ( typeof(doc) !== 'undefined' ) {
       var dateSince = doc.start_time;
-      parent.doc = doc;
-      // console.log(JSON.stringify(doc));
+      // parent.doc = doc;
+      parent.votes = doc.votes;
       parent.twitter.getTweets(doc.poll_keywords, unifyVoteKeywords(doc), doc.start_time, doc.end_time, function (ret) {
-        console.log('getting tweets');
-        callback(ret);
+        console.log('Tweets:');
+        // console.log(JSON.stringify(ret));
+
+        for (var i = 0 ; i < ret.statuses.length ; ++i) {
+          parent.processTweet(ret.statuses[i].id,ret.statuses[i].text);
+          // console.log('User: @'+ret.statuses[i].user.screen_name+'   Tweet: '+ret.statuses[i].text+'   id:'+ret.statuses[i].id+'   timestamp'+ret.statuses[i].created_at);
+        }
+
+        parent.twitter.storeTweets(function() {
+          callback(ret);
+        })
       });
+    } else {
+      console.log("Error could not fetch tweets");
     }
   });
 };

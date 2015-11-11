@@ -87,6 +87,14 @@ app.post('/submit_new_acc', function (req, res) {
   });
 });
 
+app.get('/create_poll',function (req,res) {
+	compileAndRenderPage('create_poll.hbs',res);
+});
+
+app.post('/submit_new_poll', function (req,res) {
+	console.log(JSON.stringify(req.body));
+	compileAndRenderPage('index.hbs',res);
+})
 var server = app.listen(port, function () {
   var host = server.address().address;
   var port = server.address().port;
