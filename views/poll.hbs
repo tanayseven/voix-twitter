@@ -44,6 +44,7 @@
       {{/if}}
     {{else}}
     {{/if}}
+    <canvas id="pollChart" width="400" height="400"></canvas>
     <p>
       {{#if this.success}}
         <p>Success</p>
@@ -51,15 +52,17 @@
         <p>Failure</p>
       {{/if}}
     </p>
+    <script src='/js/Chart.min.js'></script>
     <script src='/js/jquery.min.js'></script>
     <script src='/js/handlebars.min.js'></script>
-    <script src='/js/poll.js'></script>
+    {{!-- <script src='/js/poll.js'></script> --}}
     <script>
       Handlebars.registerHelper('json', function(context) {
         return JSON.stringify(context);
       });
-      var n = {{{json this}}};
-      console.log(JSON.stringify(n));
+      var res = {{{json this}}};
+      console.log(JSON.stringify(res));
     </script>
+    <script src='/js/poll.js'></script>
   </body>
 </html>
