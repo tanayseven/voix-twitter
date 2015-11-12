@@ -92,8 +92,11 @@ app.get('/create_poll',function (req,res) {
 });
 
 app.post('/submit_new_poll', function (req,res) {
-	console.log(JSON.stringify(req.body));
-	compileAndRenderPage('index.hbs',res);
+	// console.log(JSON.stringify(req.body));
+	poll.createPoll(req.body,function(ret){
+		console.log(JSON.stringify(ret));
+		compileAndRenderPage('index.hbs',res);
+	});
 })
 var server = app.listen(port, function () {
   var host = server.address().address;

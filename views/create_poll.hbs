@@ -30,21 +30,21 @@
   <body>
     <h1> Voix </h1>
     <form action="/submit_new_poll" method="POST">
-      <textarea name='question' autofocus> </textarea>
+      <textarea name='poll_name' autofocus> </textarea>
       <br>
-      <input name='keys' type="text">
+      <input name='poll_keywords' type="text">
       <br>
-      <input name='option[]' type="text"><input name='ans_key[]' type="text">
+      <input name='votes_name[]' type="text"><input name='votes_tag[]' type="text">
       <br>
-      <input name='option[]' type="text"><input name='ans_key[]' type="text">
+      <input name='votes_name[]' type="text"><input name='votes_tag[]' type="text">
       <br>
-      <input name='option[]' type="text"><input name='ans_key[]' type="text">
+      <input name='votes_name[]' type="text"><input name='votes_tag[]' type="text">
       <br>
-      <input name='option[]' type="text"><input name='ans_key[]' type="text">
+      <input name='votes_name[]' type="text"><input name='votes_tag[]' type="text">
       <br>
-      <input name='start_time' type="date">
+      Poll start date: <input name='start_time' type="date">
       <br>
-      <input name='end_time' type="date">
+      Poll end date: <input name='end_time' type="date">
       <br>
       <input type='submit' value='Create Poll'>
       <br>

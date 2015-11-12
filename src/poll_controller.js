@@ -39,9 +39,35 @@ PollController.prototype.assignDummy = function () {
   this.poll_id = '563f23812399ec75d216e9d2';
 }
 
-PollController.prototype.createPoll = function (obj,callback) {
+PollController.prototype.createPoll = function (obj,callback) { //TODO add functionality here
   var parent = this;
-  // parent.db.insert(obj,)
+  for (var i = 0 ; i < obj.votes_tag.length ; ++i) {
+    obj.votes_tag[i] = obj.votes_tag[i].split(' ');
+  }
+  obj.poll_keywords = obj.poll_keywords.split(' ');
+  console.log(JSON.stringify(obj));
+  var obj_insert = {
+    end_time: new Date(),
+    start_time: new Date(),
+    poll_name: obj.poll_name,
+    poll_keywords: obj.poll_keywords,
+    votes:[],
+    tweets:[]
+  }
+  for (var i = 0 ; i < obj.votes_name.length ; ++i) {
+    obj_insert.votes.push({name:obj.votes_name[i], tags:obj.votes_tag[i], count:0});
+  }
+  console.log(JSON.stringify(obj_insert));
+  parent.db.insert(obj_insert,function(err,doc) {
+    if (err) throw err;
+    if (doc) {
+      console.log('Inserted successfully');
+      callback({success:true});
+    } else {
+      console.log('Failed to insert');
+      callback({success:false});
+    }
+  });
 };
 
 var unifyVoteKeywords = function (doc) {
