@@ -68,7 +68,7 @@ function getDateString(date) {
 TwitterController.prototype.getTweets = function (keywordsOptions,keywordsVotes,dateStart,dateUntil,callback) {
   var parent = this;
   var strKey = appendKeywords(keywordsOptions,' OR ');
-  strKey += ' ' + appendKeywords(keywordsVotes,' OR ');
+  strKey += ' OR ' + appendKeywords(keywordsVotes,' OR ');
   console.log(strKey);
   var strDateSince = getDateString(dateStart);
   var strDateUntil = getDateString(dateUntil);
