@@ -32,6 +32,7 @@
     <form action="/search_polls" method="POST">
       <input name='search_query' type='text'><input type="submit" value="Search">
     </form>
+    <h3>{{this.poll_name}}</h3>
     {{#if login}}
       {{#if login.success}}
         <p> Logged in as: {{login.username}} </p>
@@ -44,9 +45,21 @@
     {{else}}
     {{/if}}
     <p>
-      {{#each polls}}
-        <a href='/poll/{{_id}}'>{{poll_name}}</a>
-      {{/each}}
+      {{#if this.success}}
+        <p>Success</p>
+      {{else}}
+        <p>Failure</p>
+      {{/if}}
     </p>
+    <script src='/js/jquery.min.js'></script>
+    <script src='/js/handlebars.min.js'></script>
+    <script src='/js/poll.js'></script>
+    <script>
+      Handlebars.registerHelper('json', function(context) {
+        return JSON.stringify(context);
+      });
+      var n = {{{json this}}};
+      console.log(JSON.stringify(n));
+    </script>
   </body>
 </html>

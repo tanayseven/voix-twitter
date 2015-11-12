@@ -47,6 +47,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+handlebars.registerHelper('json', function(context) {
+	return JSON.stringify(context);
+});
+
 function assignUserToObj(obj) {
 	obj.username = user.username;
 	obj.email = user.email;
@@ -113,6 +117,12 @@ app.post('/search_polls', function (req,res) {
 		console.log(JSON.stringify(ret));
 		var obj = {polls:ret};
 		compileAndRenderPage('results.hbs',res,obj);
+	});
+});
+
+app.get('/poll/:id',function (req,res) {
+	poll.getPoll(req.params.id,function(ret){
+		compileAndRenderPage('poll.hbs',res,ret);
 	});
 });
 

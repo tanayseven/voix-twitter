@@ -120,6 +120,19 @@ PollController.prototype.processTweet = function (tweet_id,tweet) {
   });
 };
 
+PollController.prototype.getPoll = function(poll_id,callback) {
+  var parent = this;
+  parent.db.findById(poll_id,function(err,doc) {
+    if (err) throw err;
+    if (doc) {
+      doc.success = true;
+    } else {
+      doc = {success:false};
+    }
+      callback(doc);
+  });
+};
+
 PollController.prototype.fetchTweets = function(poll_id,callback) {
   var parent = this;
   console.log('called fetchign tweets');
