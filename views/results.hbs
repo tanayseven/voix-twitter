@@ -36,18 +36,6 @@
       {{#if login.success}}
         <p> Logged in as: {{login.username}} </p>
       {{/if}}
-    {{else}}
-      <form action="/login" method="POST">
-        <input name='username' type='text' placeholder='username' autofocus>
-        <br>
-        <input name='password' type='password' placeholder='password' autofocus>
-        <br>
-        <input type='submit' value='Sign in'>
-        <br>
-        <a href="./signup"> Sign Up </a>
-        <a href="#"> Forgot Password </a>
-        <br>
-      </form>
     {{/if}}
     {{#if login}}
       {{#if login.success}}
@@ -56,13 +44,9 @@
     {{else}}
     {{/if}}
     <p>
-      {{#if registered}}
-        {{#if registered.success}}
-          Registered successfully
-        {{else}}
-          Registration Failed
-        {{/if}}
-      {{/if}}
+      {{#each polls}}
+        <a href=''>{{poll_name}}</a>
+      {{/each}}
     </p>
   </body>
 </html>

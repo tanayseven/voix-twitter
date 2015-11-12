@@ -81,6 +81,17 @@ var unifyVoteKeywords = function (doc) {
   return res;
 };
 
+PollController.prototype.search = function (str_search,callback) {
+  var parent = this;
+  parent.db.find({poll_name:{$regex:str_search.split(' ').join('|'),$options: 'i'}},function (err,doc) {
+    if (err) throw err;
+    if(doc){
+      // console.log(JSON.stringify(doc));
+      callback(doc);
+    }
+  });
+};
+
 PollController.prototype.processTweet = function (tweet_id,tweet) {
   var parent = this;
   tweet = tweet.toLowerCase();

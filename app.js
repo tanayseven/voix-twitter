@@ -106,7 +106,16 @@ app.post('/submit_new_poll', function (req,res) {
 		console.log(JSON.stringify(ret));
 		compileAndRenderPage('home.hbs',res);
 	});
-})
+});
+
+app.post('/search_polls', function (req,res) {
+	poll.search(req.body.search_query,function(ret) {
+		console.log(JSON.stringify(ret));
+		var obj = {polls:ret};
+		compileAndRenderPage('results.hbs',res,obj);
+	});
+});
+
 var server = app.listen(port, function () {
   var host = server.address().address;
   var port = server.address().port;
