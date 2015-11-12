@@ -67,7 +67,7 @@ function getDateString(date) {
 
 TwitterController.prototype.getTweets = function (keywordsOptions,keywordsVotes,dateStart,dateUntil,callback) {
   var parent = this;
-  var strKey = appendKeywords(keywordsOptions,' ');
+  var strKey = appendKeywords(keywordsOptions,' OR ');
   strKey += ' ' + appendKeywords(keywordsVotes,' OR ');
   console.log(strKey);
   var strDateSince = getDateString(dateStart);
@@ -75,35 +75,38 @@ TwitterController.prototype.getTweets = function (keywordsOptions,keywordsVotes,
   // console.log('getting tweets');
   console.log( ' ' + strKey + ' since:'+strDateSince+' until:'+strDateUntil);
   // this.api.get('search/tweets', { q: strKey + ' ' + ' since:'+strDateSince+' until:'+strDateUntil}, function(err, data, response) {
-  parent.api.get('search/tweets', {  q: strKey + ' ' + ' since:'+strDateSince+' until:'+strDateUntil}, function(err, data, response) {
-    console.log('got tweets');
+  parent.api.get('search/tweets', {  q: strKey + ' ' + ' since:'+strDateSince+' until:'+strDateUntil, count:10000}, function(err, data, response) {
+    console.log('got '+data.statuses.length+' tweets');
+    var tweets = [];
     // console.log(JSON.stringify(data.statuses[0]));
     if (typeof(data) !== 'undefined'){
       for (var i = 0 ; i < data.statuses.length ; ++i ){
         var obj_tmp = {
           username: data.statuses[i].user.screen_name,
-          txt:data.statuses[i].text,
+          text:data.statuses[i].text,
           id:data.statuses[i].id,
           timestamp:data.statuses[i].created_at
         };
         console.log(JSON.stringify(obj_tmp));
-        parent.obj_insert.push(obj_tmp);
+        tweets.push(obj_tmp);
+        parent.db.insert(obj_tmp,function (err,doc) {
+          if (err) throw err;
+          if(doc){
+            console.log("Inserted into db");
+          }
+        });
+        // console.log(JSON.stringify(parent.obj_insert));
       }
+      callback(tweets);
     }
-    callback(data);
   });
 };
 
-TwitterController.prototype.storeTweets = function(callback) {
-  var parent = this;
-  parent.db.insert(parent.obj_insert,function (err,doc) {
-    if (err) throw err;
-    if(doc){
-      console.log("Inserted into db");
-    }
-  });
-  parent.obj_insert = [];
-  callback();
-}
+// TwitterController.prototype.storeTweets = function(callback) {
+//   var parent = this;
+//
+//   parent.obj_insert = [];
+//   callback();
+// }
 
 module.exports = TwitterController;

@@ -71,10 +71,10 @@ function compileAndRenderPage(file_name,res,args) {
 
 app.get('/', function (req, res) {
 	console.log("called /");
-	poll.assignDummy();
-	poll.fetchTweets('afwdad',function(ret){
-		console.log("done fetching");
-	});
+	// poll.assignDummy();
+	// poll.fetchTweets('afwdad',function(ret){
+	// 	console.log("done fetching");
+	// });
 	compileAndRenderPage('home.hbs',res);
 });
 
