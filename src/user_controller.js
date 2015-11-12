@@ -27,6 +27,8 @@ var db = require('monk')(connString);
 
 function UserHandler(){
   this.db = db.get('user');
+  this.username = '';
+  this.email = '';
 }
 
 UserHandler.prototype.registerUser = function(obj,callback) {
@@ -51,6 +53,8 @@ UserHandler.prototype.loginUser = function(obj,callback) {
     if (!doc) {
       callback({success:false});
     } else {
+      parent.username = obj.username;
+      parent.emil = obj.email;
       callback({success:true,username:obj.username});
     }
   });

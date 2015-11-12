@@ -47,10 +47,18 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+function assignUserToObj(obj) {
+	obj.username = user.username;
+	obj.email = user.email;
+	return obj;
+}
+
 function compileAndRenderPage(file_name,res,args) {
 	if (typeof(args) === 'undefined'){
 		args = {};
 	}
+	args = assignUserToObj(args);
+	console.log(file_name+' '+args);
 	cons.handlebars('views/' + file_name, args, function(err, html){
 	  if (err) throw err;
 		res.send(html);
@@ -63,16 +71,16 @@ app.get('/', function (req, res) {
 	poll.fetchTweets('afwdad',function(ret){
 		console.log("done fetching");
 	});
-	compileAndRenderPage('index.hbs',res);
+	compileAndRenderPage('home.hbs',res);
 });
 
 app.post('/login', function (req, res) {
   user.loginUser(req.body,function (ret){
-    console.log(JSON.stringify('argwag',ret));
+		var obj = {login:ret}
     if (ret.success) {
-      compileAndRenderPage('logged_in.hbs',res,{login:ret});
+      compileAndRenderPage('home.hbs',res,obj);
     } else {
-      compileAndRenderPage('index.hbs',res,{login:ret});
+      compileAndRenderPage('home.hbs',res,obj);
     }
   });
 });
@@ -83,7 +91,8 @@ app.get('/signup', function (req, res) {
 
 app.post('/submit_new_acc', function (req, res) {
   user.registerUser(req.body,function (ret) {
-    compileAndRenderPage('index.hbs',res,{registered:ret});
+		var obj = {registered:ret};
+    compileAndRenderPage('home.hbs',res,obj);
   });
 });
 
@@ -95,7 +104,7 @@ app.post('/submit_new_poll', function (req,res) {
 	// console.log(JSON.stringify(req.body));
 	poll.createPoll(req.body,function(ret){
 		console.log(JSON.stringify(ret));
-		compileAndRenderPage('index.hbs',res);
+		compileAndRenderPage('home.hbs',res);
 	});
 })
 var server = app.listen(port, function () {

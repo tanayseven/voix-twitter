@@ -29,6 +29,11 @@
   </head>
   <body>
     <h1> Voix </h1>
+    {{#if login}}
+      {{#if login.success}}
+        <p> Logged in as: {{login.username}} </p>
+      {{/if}}
+    {{/if}}
     <form action="/submit_new_poll" method="POST">
       <textarea name='poll_name' autofocus> </textarea>
       <br>
