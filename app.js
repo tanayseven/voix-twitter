@@ -36,6 +36,7 @@ var PollController = new require('./src/poll_controller');
 var poll = new PollController();
 
 var app = express();
+var sock = require('socket.io').listen(app.listen(port));
 app.set('views',__dirname+'/views/');
 
 app.use(express.static('public'));
