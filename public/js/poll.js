@@ -11,6 +11,15 @@
 
 $(document).ready(function(){
   var ctx = $("#pollChart")[0].getContext("2d");
+  var socket = io.connect(/*window.location.hostname*/);
+  socket.on('status',function (msg) {
+    if(msg.connected) {
+      socket.emit('register',{username:'anonymous'});
+    }
+  });
+  socket.on('tweet', function(tweet) {
+    console.log(JSON.stringify(tweet));
+  });
 
   var options = {
       //Boolean - Whether we should show a stroke on each segment
@@ -68,9 +77,9 @@ $(document).ready(function(){
   ];*/
 
 
-  for (var i = 0 ; i < res.votes.length ; ++i) {
-    data.push({value:res.votes[i].count,color:color_arr[i],highlight:color_arr[(i+3)*2],label:res.votes[i].name});
-  }
+  // for (var i = 0 ; i < res.votes.length ; ++i) {
+  //   data.push({value:res.votes[i].count,color:color_arr[i],highlight:color_arr[(i+3)*2],label:res.votes[i].name});
+  // }
 
   var myPieChart = new Chart(ctx).Pie(data,options);
 });

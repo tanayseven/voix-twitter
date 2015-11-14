@@ -36,7 +36,6 @@ var PollController = new require('./src/poll_controller');
 var poll = new PollController();
 
 var app = express();
-var sock = require('socket.io').listen(app.listen(port));
 app.set('views',__dirname+'/views/');
 
 app.use(express.static('public'));
@@ -47,6 +46,14 @@ app.use(bodyParser.urlencoded({
 	extended: true
 }));
 app.use(bodyParser.json());
+
+// app.use(function (req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+//   res.setHeader('Access-Control-Allow-Credentials', true);
+//   next();
+// });
 
 handlebars.registerHelper('json', function(context) {
 	return JSON.stringify(context);
@@ -121,15 +128,25 @@ app.post('/search_polls', function (req,res) {
 	});
 });
 
+var io = require('socket.io').listen(
+	app.listen(port,function () {
+  	console.log('Voix Twitter started at :%s', port);
+	})
+);
+
+
 app.get('/poll/:id',function (req,res) {
-	poll.getPoll(req.params.id,function(ret){
-		compileAndRenderPage('poll.hbs',res,ret);
-	});
+	poll.streamTweets();
+	// poll.getPoll(req.params.id,function(ret){
+	// 	compileAndRenderPage('poll.hbs',res,ret);
+	// });
+	compileAndRenderPage('poll.hbs',res,{});
 });
 
-var server = app.listen(port, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-
-  console.log('Voix Twitter started at http://%s:%s', host, port);
+io.sockets.on('connection', function(socket){
+	socket.emit('status',{connected:true});
+	socket.on('register',function(msg){
+		socket.join(poll.poll_id);
+		poll.addSocket(socket);
+	});
 });

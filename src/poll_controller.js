@@ -29,6 +29,7 @@ function PollController(){
   this.db = db.get('poll');
   this.twitter_db = db.get('twitter');
   this.votes = {};
+  this.client_sockets = [];
   this.poll_id = null;
   this.doc= null;
   this.twitter = new TwitterController();
@@ -111,57 +112,26 @@ PollController.prototype.processTweet = function (tweet_id,tweet) {
           console.log("Tweet added to poll");
         }
       });
-    // }
-  // });
 };
 
 PollController.prototype.getPoll = function(poll_id,callback) {
-  var parent = this;
-  parent.poll_id = poll_id;
-  parent.db.findById(poll_id,function(err,doc) {
-    if (err) throw err;
-    if (doc) {
-      parent.fetchTweets(doc._id,function(ret){
-        doc.success = true;
-        callback(doc);
-      });
-    } else {
-      doc = {success:false};
-      callback(doc);
+
+};
+
+PollController.prototype.streamTweets = function() {
+  var parent =  this;
+  parent.twitter.getTweets(function (tweet) {
+    // console.log('Tweeting: '+JSON.stringify(tweet));
+    for (var i = 0 ; i < parent.client_sockets.length ; ++i ) {
+      // console.log('Entered for loop');
+      parent.client_sockets[i].emit('tweet',tweet);
     }
   });
 };
 
-PollController.prototype.fetchTweets = function(poll_id,callback) {
-  var parent = this;
-  console.log('called fetchign tweets');
-  parent.db.findById(poll_id,function(err,doc) {
-    if (err) throw err;
-    console.log('found poll, i guess :-|');
-    if (doc) {
-      var dateSince = doc.start_time;
-      // parent.doc = doc;
-      parent.votes = doc.votes;
-      parent.twitter.getTweets(doc.poll_keywords, unifyVoteKeywords(doc), doc.start_time, doc.end_time, function (ret) {
-        console.log('Tweets:');
-        console.log(JSON.stringify(ret));
-
-        for (var i = 0 ; i < ret.length ; ++i) {
-          parent.processTweet(ret[i].id,ret[i].text);
-          // console.log('User: @'+ret.statuses[i].user.screen_name+'   Tweet: '+ret.statuses[i].text+'   id:'+ret.statuses[i].id+'   timestamp'+ret.statuses[i].created_at);
-        }
-        parent.db.findById(poll_id,function(err,doc) {
-          if (err) throw err;
-          if (doc) {
-            callback(doc);
-          }
-          else {
-            callback(ret);
-          }
-        });
-      });
-    }
-  });
+PollController.prototype.addSocket = function (socket) {
+  console.log('Adding socket');
+  this.client_sockets.push(socket);
 };
 
 module.exports = PollController;

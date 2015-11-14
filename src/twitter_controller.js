@@ -33,17 +33,14 @@ var env = (function(){
 
 function TwitterController () {
   this.db = db.get('twitter');
-  this.obj_insert = [];
-  if (db) {console.log("Connected successfully");}
+  this.stream = null;//Twit.stream('statuses/sample');
+  this.forwardTweets = function (dumm) { };
   this.api = new Twit({
     consumer_key:        process.env.TWIT_CONSUMER_KEY        || env.get('CONSUMER_KEY'),
     consumer_secret:     process.env.TWIT_CONSUMER_SECRET     || env.get('CONSUMER_SECRET'),
     access_token:        process.env.TWIT_ACCESS_TOKEN        || env.get('ACCESS_TOKEN'),
     access_token_secret: process.env.TWIT_ACCESS_TOKEN_SECRET || env.get('ACCESS_TOKEN_SECRET')
   });
-  // this.api.get('search/tweets', { q: 'apple OR mango OR pineapple since:2011-11-11', count: 100000 }, function(err, data, response) {
-  //   console.log(data);
-  // });
 }
 
 function appendKeywords (arr,option) {
@@ -65,48 +62,14 @@ function getDateString(date) {
   return str;
 }
 
-TwitterController.prototype.getTweets = function (keywordsOptions,keywordsVotes,dateStart,dateUntil,callback) {
+TwitterController.prototype.getTweets = function (callback) {
   var parent = this;
-  var strKey = appendKeywords(keywordsOptions,' OR ');
-  strKey += ' OR ' + appendKeywords(keywordsVotes,' OR ');
-  console.log(strKey);
-  var strDateSince = getDateString(dateStart);
-  var strDateUntil = getDateString(dateUntil);
-  // console.log('getting tweets');
-  console.log( ' ' + strKey + ' since:'+strDateSince+' until:'+strDateUntil);
-  // this.api.get('search/tweets', { q: strKey + ' ' + ' since:'+strDateSince+' until:'+strDateUntil}, function(err, data, response) {
-  parent.api.get('search/tweets', {  q: strKey + ' ' + ' since:'+strDateSince+' until:'+strDateUntil, count:10000}, function(err, data, response) {
-    console.log('got '+data.statuses.length+' tweets');
-    var tweets = [];
-    // console.log(JSON.stringify(data.statuses[0]));
-    if (typeof(data) !== 'undefined'){
-      for (var i = 0 ; i < data.statuses.length ; ++i ){
-        var obj_tmp = {
-          username: data.statuses[i].user.screen_name,
-          text:data.statuses[i].text,
-          id:data.statuses[i].id,
-          timestamp:data.statuses[i].created_at
-        };
-        console.log(JSON.stringify(obj_tmp));
-        tweets.push(obj_tmp);
-        parent.db.insert(obj_tmp,function (err,doc) {
-          if (err) throw err;
-          if(doc){
-            console.log("Inserted into db");
-          }
-        });
-        // console.log(JSON.stringify(parent.obj_insert));
-      }
-      callback(tweets);
-    }
+  console.log("Creating stream");
+  parent.stream = parent.api.stream('statuses/filter', {track:'#ParisAttacks' });
+  parent.stream.on('tweet', function (tweet) {
+    // console.log(tweet);
+    callback(tweet);
   });
 };
-
-// TwitterController.prototype.storeTweets = function(callback) {
-//   var parent = this;
-//
-//   parent.obj_insert = [];
-//   callback();
-// }
 
 module.exports = TwitterController;
