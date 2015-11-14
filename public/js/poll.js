@@ -9,6 +9,7 @@
 //   return tmp+String.fromCharCode(char);
 // };
 $(document).ready(function(){
+  var data = [];
   // var doc = {"_id":"5644e0992fec07254f6ca573","end_time":"2015-11-13T18:55:21.277Z","start_time":"2015-11-07T18:55:21.277Z","poll_name":" Who really won the Bihar election","poll_keywords":["Bihar","election"],"votes":[{"name":"congress","tags":["congress"],"count":0},{"name":"bjp","tags":["bjp"],"count":0},{"name":"jdu","tags":["jdu"],"count":0}],"tweets":[],"success":true,"username":"","email":"","filename":"views/poll.hbs","data":true,"blockParams":[],"knownHelpers":{"helperMissing":true,"blockHelperMissing":true,"each":true,"if":true,"unless":true,"with":true,"log":true,"lookup":true}};
   var myPieChart = null;
   var color_arr = [
@@ -26,7 +27,14 @@ $(document).ready(function(){
       legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
   }
   var processTweet = function (tweet) {
-
+    for (var i = 0; i < doc.votes.length; i++) {
+      for (var j = 0; j < doc.votes[i].tags.length; j++) {
+        if ( tweet.toLowerCase().indexOf(doc.votes[i].tags[j].toLowerCase()) >= 0 ) {
+          console.log("Match found");
+          doc.votes[i].count++;
+        }
+      }
+    }
   };
   var initial = false;
   var ctx = $("#pollChart")[0].getContext("2d");
@@ -34,23 +42,30 @@ $(document).ready(function(){
   socket.on('status',function (msg) {
     if(msg.connected) {
       socket.emit('register',{username:'anonymous'});
-      var data = [];
       for (var i = 0 ; i < doc.votes.length ; ++i) {
         console.log(doc.votes[i].name+' '+doc.votes[i].count);
         data.push({value:doc.votes[i].count,color:color_arr[i],highlight:color_arr[(i+2)*2],label:doc.votes[i].name});
       }
-      // console.log(JSON.stringify(data)+' '+JSON.stringify(options));
       console.log(ctx);
       myPieChart = new Chart(ctx).Pie(data,options);
+      window.setInterval(updateChart, 10000);
     }
   });
   var updateChart = function() {
+    // for (var i = 0 ; i <= doc.votes.length ; ++i) {
+    //   myPieChart.removeData(i);
+    // }
+    // myPieChart.update();
     for (var i = 0 ; i < doc.votes.length ; ++i) {
       console.log(doc.votes[i].name+' '+doc.votes[i].count);
-      data.push({value:doc.votes[i].count,color:color_arr[i],highlight:color_arr[(i+2)*2],label:doc.votes[i].name});
+      doc.votes[i].count++;
+      myPieChart.segments[i].value = doc.votes[i].count;
+      // myPieChart.addData({value:doc.votes[i].count,color:color_arr[i],highlight:color_arr[(i+2)*2],label:doc.votes[i].name},i+1);
     }
+    myPieChart.update();
   }
   socket.on('tweet', function(tweet) {
     // console.log(JSON.stringify(tweet));
+    processTweet(tweet.text);
   });
 });
