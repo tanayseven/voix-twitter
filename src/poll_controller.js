@@ -68,6 +68,9 @@ PollController.prototype.createPoll = function (obj,callback) { //TODO add funct
 
 var unifyVoteKeywords = function (doc) {
   var res = [];
+  for (var i = 0; i < doc.poll_keywords.length; i++) {
+    res.push(doc.poll_keywords[i]);
+  }
   for (var i = 0; i < doc.votes.length; i++) {
     for (var j = 0; j < doc.votes[i].tags.length; j++) {
       res.push(doc.votes[i].tags[j]);
@@ -114,19 +117,30 @@ PollController.prototype.processTweet = function (tweet_id,tweet) {
       });
 };
 
-PollController.prototype.getPoll = function(poll_id,callback) {
-
-};
-
-PollController.prototype.streamTweets = function() {
+PollController.prototype.streamTweets = function(poll_id,callback) {
   var parent =  this;
-  parent.twitter.getTweets(function (tweet) {
-    // console.log('Tweeting: '+JSON.stringify(tweet));
-    for (var i = 0 ; i < parent.client_sockets.length ; ++i ) {
-      // console.log('Entered for loop');
-      parent.client_sockets[i].emit('tweet',tweet);
-    }
-  });
+  if (parent.poll_id === null) {
+    parent.db.findById(poll_id,function(err,doc){
+      if (err) throw err;
+      console.log(JSON.stringify(doc));
+      if(doc) {
+        parent.doc = doc;
+        parent.keywords = unifyVoteKeywords(doc);
+        // console.log(JSON.stringify(parent.keywords));
+        parent.twitter.setKeywords(parent.keywords);
+        parent.twitter.getTweets(function (tweet) {
+          // console.log('Tweeting: '+JSON.stringify(tweet));
+          console.log(parent.client_sockets.length);
+          for (var i = 0 ; i < parent.client_sockets.length ; ++i ) {
+            console.log("Sending tweet to client");
+            parent.client_sockets[i].emit('tweet',tweet);
+          }
+          doc.success = true;
+          callback(doc);
+        });
+      }
+    });
+  }
 };
 
 PollController.prototype.addSocket = function (socket) {

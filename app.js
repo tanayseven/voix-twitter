@@ -65,6 +65,7 @@ function assignUserToObj(obj) {
 	return obj;
 }
 
+var replySent = false;
 function compileAndRenderPage(file_name,res,args) {
 	if (typeof(args) === 'undefined'){
 		args = {};
@@ -73,7 +74,10 @@ function compileAndRenderPage(file_name,res,args) {
 	console.log(file_name+' '+args);
 	cons.handlebars('views/' + file_name, args, function(err, html){
 	  if (err) throw err;
-		res.send(html);
+		if (!replySent) {
+			replySent = true;
+			res.send(html);
+		}
 	});
 }
 
@@ -136,11 +140,9 @@ var io = require('socket.io').listen(
 
 
 app.get('/poll/:id',function (req,res) {
-	poll.streamTweets();
-	// poll.getPoll(req.params.id,function(ret){
-	// 	compileAndRenderPage('poll.hbs',res,ret);
-	// });
-	compileAndRenderPage('poll.hbs',res,{});
+	poll.streamTweets(req.params.id,function(ret){
+		compileAndRenderPage('poll.hbs',res,ret);
+	});
 });
 
 io.sockets.on('connection', function(socket){

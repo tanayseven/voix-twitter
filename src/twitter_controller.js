@@ -35,6 +35,7 @@ function TwitterController () {
   this.db = db.get('twitter');
   this.stream = null;//Twit.stream('statuses/sample');
   this.forwardTweets = function (dumm) { };
+  this.keywords = [];
   this.api = new Twit({
     consumer_key:        process.env.TWIT_CONSUMER_KEY        || env.get('CONSUMER_KEY'),
     consumer_secret:     process.env.TWIT_CONSUMER_SECRET     || env.get('CONSUMER_SECRET'),
@@ -61,13 +62,17 @@ function getDateString(date) {
   str += (date.getDate()<=9)?'0'+date.getDate().toString():date.getDate().toString();
   return str;
 }
-
+TwitterController.prototype.setKeywords = function (keywords) {
+  this.keywords = keywords;
+  // console.log(JSON.stringify(this.keywords));
+}
 TwitterController.prototype.getTweets = function (callback) {
   var parent = this;
   console.log("Creating stream");
-  parent.stream = parent.api.stream('statuses/filter', {track:'#ParisAttacks' });
+  // console.log(JSON.stringify(parent.keywords));
+  parent.stream = parent.api.stream('statuses/filter', {track: parent.keywords});
   parent.stream.on('tweet', function (tweet) {
-    // console.log(tweet);
+    // console.log('Tweet: '+JSON.stringify(tweet));
     callback(tweet);
   });
 };
