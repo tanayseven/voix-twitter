@@ -21,9 +21,12 @@
 // THE SOFTWARE.
 
 var express = require('express');
+var app = express();
 var bodyParser = require('body-parser');
 var querystring = require('querystring');
 var handlebars = require('handlebars');
+var http = require('http').createServer(app);
+var io = require("socket.io").listen(http);
 var cons = require('consolidate');
 
 var UserHandler = new require('./src/user_controller');
@@ -35,12 +38,15 @@ var user = new UserHandler();
 var PollController = new require('./src/poll_controller');
 var poll = new PollController();
 
-var app = express();
 app.set('views',__dirname+'/views/');
 
 app.use(express.static('public'));
 
-var port = Number(process.env.PORT || 5000);
+//Server's IP address
+app.set("ipaddr", "127.0.0.1");
+
+//Server's port number
+app.set("port", Number(process.env.PORT || 5000));
 
 app.use(bodyParser.urlencoded({
 	extended: true
@@ -74,10 +80,7 @@ function compileAndRenderPage(file_name,res,args) {
 	console.log(file_name+' '+args);
 	cons.handlebars('views/' + file_name, args, function(err, html){
 	  if (err) throw err;
-		if (!replySent) {
-			replySent = true;
 			res.send(html);
-		}
 	});
 }
 
@@ -132,11 +135,6 @@ app.post('/search_polls', function (req,res) {
 	});
 });
 
-var io = require('socket.io').listen(
-	app.listen(port,function () {
-  	console.log('Voix Twitter started at :%s', port);
-	})
-);
 
 
 app.get('/poll/:id',function (req,res) {
@@ -151,4 +149,9 @@ io.sockets.on('connection', function(socket){
 		socket.join(poll.poll_id);
 		poll.addSocket(socket);
 	});
+});
+
+//Start the http server at port and IP defined before
+http.listen(app.get("port"), app.get("ipaddr"), function() {
+  console.log("Server up and running. Go to http://" + app.get("ipaddr") + ":" + app.get("port"));
 });
