@@ -10,7 +10,7 @@
   "dependencies": {
     "express": "~4.6.1",
     "body-parser": "~1.14.0",
-    "socket.io": "~1.0.6",
+    "socket.io": "~1.0",
     "handlebars": "~4.0.4",
     "consolidate": "~0.13.1",
     "habitat": "~3.0.0",

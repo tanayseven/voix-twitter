@@ -25,8 +25,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var querystring = require('querystring');
 var handlebars = require('handlebars');
-var http = require('http').createServer(app);
-var io = require("socket.io").listen(http);
+var http = require('http')
 var cons = require('consolidate');
 
 var UserHandler = new require('./src/user_controller');
@@ -42,11 +41,12 @@ app.set('views',__dirname+'/views/');
 
 app.use(express.static('public'));
 
-//Server's IP address
 app.set("ipaddr", "127.0.0.1");
-
-//Server's port number
 app.set("port", Number(process.env.PORT || 5000));
+var io = require("socket.io").listen(http.createServer(app).listen(app.get("port"),function() {
+  console.log("Server up and running. Go to http://" + app.get("ipaddr") + ":" + app.get("port"));
+})
+);
 
 app.use(bodyParser.urlencoded({
 	extended: true
@@ -77,10 +77,13 @@ function compileAndRenderPage(file_name,res,args) {
 		args = {};
 	}
 	args = assignUserToObj(args);
-	console.log(file_name+' '+args);
+	// console.log(file_name+' '+args);
 	cons.handlebars('views/' + file_name, args, function(err, html){
-	  if (err) throw err;
+	  if (err){
+			// throw err;
+		} else {
 			res.send(html);
+		}
 	});
 }
 
@@ -135,8 +138,6 @@ app.post('/search_polls', function (req,res) {
 	});
 });
 
-
-
 app.get('/poll/:id',function (req,res) {
 	poll.streamTweets(req.params.id,function(ret){
 		compileAndRenderPage('poll.hbs',res,ret);
@@ -149,9 +150,4 @@ io.sockets.on('connection', function(socket){
 		socket.join(poll.poll_id);
 		poll.addSocket(socket);
 	});
-});
-
-//Start the http server at port and IP defined before
-http.listen(app.get("port"),function() {
-  console.log("Server up and running. Go to http://" + app.get("ipaddr") + ":" + app.get("port"));
 });

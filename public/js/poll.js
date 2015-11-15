@@ -10,7 +10,6 @@
 // };
 $(document).ready(function(){
   var data = [];
-  // var doc = {"_id":"5644e0992fec07254f6ca573","end_time":"2015-11-13T18:55:21.277Z","start_time":"2015-11-07T18:55:21.277Z","poll_name":" Who really won the Bihar election","poll_keywords":["Bihar","election"],"votes":[{"name":"congress","tags":["congress"],"count":0},{"name":"bjp","tags":["bjp"],"count":0},{"name":"jdu","tags":["jdu"],"count":0}],"tweets":[],"success":true,"username":"","email":"","filename":"views/poll.hbs","data":true,"blockParams":[],"knownHelpers":{"helperMissing":true,"blockHelperMissing":true,"each":true,"if":true,"unless":true,"with":true,"log":true,"lookup":true}};
   var myPieChart = null;
   var color_arr = [
     '#0000FF','#8A2BE2','#A52A2A',"#F7464A",'#00FFFF',"#46BFBD","#5AD3D1",'#F0F8FF',"#FF5A5E",'#7FFFD4','#F0FFFF','#FFE4C4','#7FFF00','#DC143C','#006400','#FF8C00','#9932CC','#FF1493'
@@ -38,7 +37,7 @@ $(document).ready(function(){
   };
   var initial = false;
   var ctx = $("#pollChart")[0].getContext("2d");
-  var socket = io.connect(/*window.location.hostname*/);
+  var socket = io.connect(document.domain);
   socket.on('status',function (msg) {
     if(msg.connected) {
       socket.emit('register',{username:'anonymous'});
@@ -48,19 +47,14 @@ $(document).ready(function(){
       }
       console.log(ctx);
       myPieChart = new Chart(ctx).Pie(data,options);
-      window.setInterval(updateChart, 10000);
+      window.setInterval(updateChart, 5000);
     }
   });
   var updateChart = function() {
-    // for (var i = 0 ; i <= doc.votes.length ; ++i) {
-    //   myPieChart.removeData(i);
-    // }
-    // myPieChart.update();
     for (var i = 0 ; i < doc.votes.length ; ++i) {
       console.log(doc.votes[i].name+' '+doc.votes[i].count);
       doc.votes[i].count++;
       myPieChart.segments[i].value = doc.votes[i].count;
-      // myPieChart.addData({value:doc.votes[i].count,color:color_arr[i],highlight:color_arr[(i+2)*2],label:doc.votes[i].name},i+1);
     }
     myPieChart.update();
   }

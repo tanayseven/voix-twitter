@@ -126,13 +126,10 @@ PollController.prototype.streamTweets = function(poll_id,callback) {
       if(doc) {
         parent.doc = doc;
         parent.keywords = unifyVoteKeywords(doc);
-        // console.log(JSON.stringify(parent.keywords));
         parent.twitter.setKeywords(parent.keywords);
         parent.twitter.getTweets(function (tweet) {
-          // console.log('Tweeting: '+JSON.stringify(tweet));
-          console.log(parent.client_sockets.length);
           for (var i = 0 ; i < parent.client_sockets.length ; ++i ) {
-            console.log("Sending tweet to client");
+            // console.log("Sending tweet to client");
             parent.client_sockets[i].emit('tweet',tweet);
           }
           doc.success = true;
