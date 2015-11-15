@@ -34,7 +34,6 @@ var env = (function(){
 function TwitterController () {
   this.db = db.get('twitter');
   this.stream = null;//Twit.stream('statuses/sample');
-  this.forwardTweets = function (dumm) { };
   this.keywords = [];
   this.api = new Twit({
     consumer_key:        process.env.TWIT_CONSUMER_KEY        || env.get('CONSUMER_KEY'),

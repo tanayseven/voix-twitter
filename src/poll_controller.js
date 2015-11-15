@@ -91,61 +91,74 @@ PollController.prototype.search = function (str_search,callback) {
   });
 };
 
-PollController.prototype.processTweet = function (tweet_id,tweet) {
+PollController.prototype.processTweet = function (tweet) {
   var parent = this;
   tweet = tweet.toLowerCase();
   console.log("Processing tweet");
       for (var i = 0; i < parent.votes.length; i++) {
         for (var j = 0; j < parent.votes[i].tags.length; j++) {
           if ( tweet.toLowerCase().indexOf(parent.votes[i].tags[j].toLowerCase()) >= 0 ) {
-            console.log("Match found "+parent.poll_id+' '+parent.votes[i].name+" "+tweet_id);
-            parent.db.update({_id:parent.poll_id,"votes.name":parent.votes[i].name,tweets:{$ne:tweet_id}},{$inc:{"votes.$.count":1}}, function(err,doc) {
-              if (err) throw err;
-              if (doc) {
-                console.log("Updated/incremented");
-              }
-            });
-            break;
+            console.log("Match found "+parent.poll_id+' '+parent.votes[i].name);
+            parent.votes[i].count++;
           }
         }
       }
-      parent.db.update({_id:parent.poll_id,tweets:{$ne:tweet_id}},{$push:{tweets:tweet_id}},function(err,doc) {
-        if (err) throw err;
-        if (doc) {
-          console.log("Tweet added to poll");
-        }
-      });
 };
 
 PollController.prototype.streamTweets = function(poll_id,callback) {
   var parent =  this;
-  if (parent.poll_id === null) {
+  // if (parent.poll_id === null) {
     parent.db.findById(poll_id,function(err,doc){
       if (err) throw err;
       console.log(JSON.stringify(doc));
       if(doc) {
         parent.doc = doc;
+        parent.poll_id = poll_id;
+        parent.votes = doc.votes;
         parent.keywords = unifyVoteKeywords(doc);
         parent.twitter.setKeywords(parent.keywords);
         parent.twitter.getTweets(function (tweet) {
           for (var i = 0 ; i < parent.client_sockets.length ; ++i ) {
             parent.client_sockets[i].emit('tweet',tweet);
           }
+          parent.processTweet(tweet.text);
           doc.success = true;
           callback(doc);
         });
       }
     });
-  }
+  setInterval(this.commitPolls, 5000,this);
+};
+
+PollController.prototype.commitPolls = function (obj) {
+  var parent = obj;
+  console.log("Called commit Polls");
+  parent.db.findById(parent.poll_id,function(err,doc) {
+    if(err) throw err;
+    if(doc) {
+      var j = 0;
+      for (var i = 0; i < parent.votes.length; i++) {
+        console.log("Added by ID");
+        parent.db.update({_id:parent.poll_id,"votes.name":parent.votes[i].name,tweets:{$ne:parent.tweet_id}},{$set:{"votes.$.count":parent.votes[i].count}}, function(err,doc) {
+          if (err) throw err;
+          if (doc) {
+            console.log("Stored.......................");
+          }
+        });
+      }
+    }
+  });
 };
 
 PollController.prototype.addSocket = function (socket) {
   console.log('Adding socket');
   this.client_sockets.push(socket);
 };
+
 PollController.prototype.removeSocket = function (socket) {
   console.log('Adding socket');
   var i = this.client_sockets.indexOf(socket);
   this.client_sockets.splice(i,1);
 };
+
 module.exports = PollController;

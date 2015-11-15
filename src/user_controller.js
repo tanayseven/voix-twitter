@@ -54,7 +54,7 @@ UserHandler.prototype.loginUser = function(obj,callback) {
       callback({success:false});
     } else {
       parent.username = obj.username;
-      parent.emil = obj.email;
+      parent.email = obj.email;
       callback({success:true,username:obj.username});
     }
   });

@@ -12,7 +12,7 @@ $(document).ready(function(){
   var data = [];
   var myPieChart = null;
   var color_arr = [
-    '#0000FF','#8A2BE2','#A52A2A',"#F7464A",'#00FFFF',"#46BFBD","#5AD3D1",'#F0F8FF',"#FF5A5E",'#7FFFD4','#F0FFFF','#FFE4C4','#7FFF00','#DC143C','#006400','#FF8C00','#9932CC','#FF1493'
+    '#0000FF','#8A2BE2','#A52A2A','#F7464A','#00FFFF',"#46BFBD","#5AD3D1",'#F0F8FF',"#FF5A5E",'#7FFFD4','#F0FFFF','#FFE4C4','#7FFF00','#DC143C','#006400','#FF8C00','#9932CC','#FF1493'
   ];
   var options = {
       segmentShowStroke : true,
@@ -43,6 +43,7 @@ $(document).ready(function(){
       socket.emit('register',{username:'anonymous'});
       for (var i = 0 ; i < doc.votes.length ; ++i) {
         console.log(doc.votes[i].name+' '+doc.votes[i].count);
+        doc.votes[i].count = doc.votes[i].count === 0 ? 1 : doc.votes[i].count;
         data.push({value:doc.votes[i].count,color:color_arr[i],highlight:color_arr[(i+2)*2],label:doc.votes[i].name});
       }
       console.log(ctx);
