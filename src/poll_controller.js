@@ -129,7 +129,6 @@ PollController.prototype.streamTweets = function(poll_id,callback) {
         parent.twitter.setKeywords(parent.keywords);
         parent.twitter.getTweets(function (tweet) {
           for (var i = 0 ; i < parent.client_sockets.length ; ++i ) {
-            // console.log("Sending tweet to client");
             parent.client_sockets[i].emit('tweet',tweet);
           }
           doc.success = true;
@@ -144,5 +143,9 @@ PollController.prototype.addSocket = function (socket) {
   console.log('Adding socket');
   this.client_sockets.push(socket);
 };
-
+PollController.prototype.removeSocket = function (socket) {
+  console.log('Adding socket');
+  var i = this.client_sockets.indexOf(socket);
+  this.client_sockets.splice(i,1);
+};
 module.exports = PollController;

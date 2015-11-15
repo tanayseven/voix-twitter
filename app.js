@@ -145,9 +145,16 @@ app.get('/poll/:id',function (req,res) {
 });
 
 io.sockets.on('connection', function(socket){
+	
 	socket.emit('status',{connected:true});
 	socket.on('register',function(msg){
 		socket.join(poll.poll_id);
 		poll.addSocket(socket);
 	});
+
+	socket.on('disconnect', function() {
+      console.log('Client disconnect!');
+			poll.removeSocket(socket);
+   });
+
 });

@@ -64,15 +64,12 @@ function getDateString(date) {
 }
 TwitterController.prototype.setKeywords = function (keywords) {
   this.keywords = keywords;
-  // console.log(JSON.stringify(this.keywords));
 }
 TwitterController.prototype.getTweets = function (callback) {
   var parent = this;
   console.log("Creating stream");
-  // console.log(JSON.stringify(parent.keywords));
   parent.stream = parent.api.stream('statuses/filter', {track: parent.keywords});
   parent.stream.on('tweet', function (tweet) {
-    // console.log('Tweet: '+JSON.stringify(tweet));
     callback(tweet);
   });
 };
