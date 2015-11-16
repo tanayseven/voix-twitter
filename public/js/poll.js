@@ -29,8 +29,9 @@ $(document).ready(function(){
     for (var i = 0; i < doc.votes.length; i++) {
       for (var j = 0; j < doc.votes[i].tags.length; j++) {
         if ( tweet.toLowerCase().indexOf(doc.votes[i].tags[j].toLowerCase()) >= 0 ) {
-          console.log("Match found");
+          // console.log("Match found");
           doc.votes[i].count++;
+          break;
         }
       }
     }
@@ -41,6 +42,7 @@ $(document).ready(function(){
   socket.on('status',function (msg) {
     if(msg.connected) {
       socket.emit('register',{username:'anonymous'});
+      data = [];
       for (var i = 0 ; i < doc.votes.length ; ++i) {
         console.log(doc.votes[i].name+' '+doc.votes[i].count);
         doc.votes[i].count = doc.votes[i].count === 0 ? 1 : doc.votes[i].count;
@@ -60,7 +62,6 @@ $(document).ready(function(){
     myPieChart.update();
   }
   socket.on('tweet', function(tweet) {
-    // console.log(JSON.stringify(tweet));
     processTweet(tweet.text);
   });
 });

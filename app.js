@@ -145,7 +145,7 @@ app.get('/poll/:id',function (req,res) {
 });
 
 io.sockets.on('connection', function(socket){
-	
+
 	socket.emit('status',{connected:true});
 	socket.on('register',function(msg){
 		socket.join(poll.poll_id);

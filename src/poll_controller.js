@@ -94,12 +94,13 @@ PollController.prototype.search = function (str_search,callback) {
 PollController.prototype.processTweet = function (tweet) {
   var parent = this;
   tweet = tweet.toLowerCase();
-  console.log("Processing tweet");
+  // console.log("Processing tweet");
       for (var i = 0; i < parent.votes.length; i++) {
         for (var j = 0; j < parent.votes[i].tags.length; j++) {
           if ( tweet.toLowerCase().indexOf(parent.votes[i].tags[j].toLowerCase()) >= 0 ) {
-            console.log("Match found "+parent.poll_id+' '+parent.votes[i].name);
+            // console.log("Match found "+parent.poll_id+' '+parent.votes[i].name);
             parent.votes[i].count++;
+            break;
           }
         }
       }
@@ -132,17 +133,17 @@ PollController.prototype.streamTweets = function(poll_id,callback) {
 
 PollController.prototype.commitPolls = function (obj) {
   var parent = obj;
-  console.log("Called commit Polls");
+  // console.log("Called commit Polls");
   parent.db.findById(parent.poll_id,function(err,doc) {
     if(err) throw err;
     if(doc) {
       var j = 0;
       for (var i = 0; i < parent.votes.length; i++) {
-        console.log("Added by ID");
+        // console.log("Added by ID");
         parent.db.update({_id:parent.poll_id,"votes.name":parent.votes[i].name,tweets:{$ne:parent.tweet_id}},{$set:{"votes.$.count":parent.votes[i].count}}, function(err,doc) {
           if (err) throw err;
           if (doc) {
-            console.log("Stored.......................");
+            // console.log("Stored.......................");
           }
         });
       }
