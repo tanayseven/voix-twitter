@@ -60,8 +60,13 @@ $(document).ready(function(){
       myPieChart.segments[i].value = doc.votes[i].count;
     }
     myPieChart.update();
+  };
+  var addTweet = function(tweet) {
+    $( "#tweets" ).prepend( $( "<div><h4>"+tweet.user.screen_name+":</h4><p>"+tweet.text+"</p></div>" ).css('border', '3px solid black') ) ;
   }
   socket.on('tweet', function(tweet) {
     processTweet(tweet.text);
+    console.log(JSON.stringify(tweet));
+    addTweet(tweet);
   });
 });
